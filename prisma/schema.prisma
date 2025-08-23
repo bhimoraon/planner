@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id        String   @id @map("_id")
+  userId    String   @db.ObjectId
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  email          String   @unique
+  username       String   @unique
+  hashedPassword String?
+  verified       Boolean? @default(false)
+
+  createdAt DateTime @default(now())
+
+  sessions Session[]
+  goals    Goal[]
+  domains  Domain[]
+  projects Project[]
+  tasks    Task[]
+
+  @@map("users")
+}
+
+model Goal {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  status      Status    @default(ON_HOLD)
+  progress    Float     @default(0)
+  deadline    DateTime?
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  domains  Domain[]
+  projects Project[]
+  tasks    Task[]
+
+  @@map("goals")
+}
+
+model Domain {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  progress    Float     @default(0)
+  createdAt   DateTime  @default(now())
+  status      Status    @default(ON_HOLD)
+  deadline    DateTime?
+  completedAt DateTime?
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  goalId String? @db.ObjectId
+  goal   Goal?   @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  projects Project[]
+  tasks    Task[]
+
+  @@map("domains")
+}
+
+model Project {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  progress    Float     @default(0)
+  deadline    DateTime?
+  status      Status    @default(ON_HOLD)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  goalId String? @db.ObjectId
+  goal   Goal?   @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  domainId String? @db.ObjectId
+  domain   Domain? @relation(fields: [domainId], references: [id], onDelete: Cascade)
+
+  tasks Task[]
+
+  @@map("projects")
+}
+
+model Task {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  notes       String?
+  completed   Boolean   @default(false)
+  priority    Priority  @default(LOW)
+  deadline    DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  // Always belongs to a User
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Optionally linked to a Goal
+  goalId String? @db.ObjectId
+  goal   Goal?   @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  // Optionally linked to a Domain
+  domainId String? @db.ObjectId
+  domain   Domain? @relation(fields: [domainId], references: [id], onDelete: Cascade)
+
+  // Optionally linked to a Project
+  projectId String?  @db.ObjectId
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+enum Status {
+  ON_HOLD
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
