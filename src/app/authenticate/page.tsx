@@ -1,10 +1,8 @@
-import TabSwitcher from "../../components/TabSwitcher";
+import TabSwitcher from "../../components/tab-switcher";
 import SignUpForm from "./SignUpForm";
 import SignInForm from "./SignInForm";
 import { getUser } from "@/lib/lucia";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 
 
 async function page() {
@@ -12,20 +10,6 @@ async function page() {
 	if (user) {
 		return redirect("/");
 	}
-
-	const token = (await cookies()).get("userInfo")?.value || null;
-	let tokenData;
-	if (token) {
-		try {
-			tokenData = await jwt.verify(token, process.env.TOKEN_SECRET!);
-
-		} catch (error) {
-			console.log("JWT verification failed:", error);
-		}
-	} else {
-		console.log("No token exist ");
-	}
-
 
 	return (
 		<div className=" h-screen w-full flex  relative  ">

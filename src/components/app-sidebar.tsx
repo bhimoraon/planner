@@ -1,31 +1,25 @@
-'use client'
-import { usePathname } from "next/navigation";
+"use client"
+import { usePathname, useRouter } from "next/navigation"
 import {
   ChevronRight,
-  ChevronDown,
   Building2,
-  Play,
-  History,
-  Star,
-  Settings,
-  BookOpen,
-  FileText,
-  User,
-  Palette,
-  TrendingUp,
-  Plane,
-  MoreHorizontal,
-  ChevronUp,
+  Home,
   Target,
   Globe,
-  Code,
-  Megaphone,
-  ShoppingCart,
-  Smartphone,
-  Monitor,
-  Shield,
-  CheckCircle,
-  Circle,
+  FolderOpen,
+  CheckSquare,
+  Settings,
+  User,
+  ChevronUp,
+  LogOut,
+  Bell,
+  Search,
+  Plus,
+  BarChart3,
+  Calendar,
+  Clock,
+  Star,
+  Archive,
 } from "lucide-react"
 import {
   Sidebar,
@@ -41,233 +35,166 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarMenuAction,
 } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { logout } from "@/app/authenticate/auth.action"
-import router from "next/router"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { logout } from "@/app/authenticate/actions"
 
-const platformItems = [
+const mainNavItems = [
+  {
+    title: "Dashboard",
+    icon: Home,
+    url: "/dashboard",
+    badge: null,
+  },
+  {
+    title: "Workspace",
+    icon: Calendar,
+    url: "/workspace",
+    badge: "5",
+  },
   {
     title: "Goals",
-    icon: Play,
-    isCollapsible: true,
-    items: [
-      { title: "History", icon: History },
-      { title: "Starred", icon: Star },
-      { title: "Settings", icon: Settings },
-    ],
+    icon: Target,
+    url: "/goals",
+    badge: "3",
   },
-  {
-    title: "Domains",
-    icon: FileText,
-    hasSubmenu: true,
-  },
-  {
-    title: "Projects",
-    icon: BookOpen,
-    hasSubmenu: true,
-  },
+  // {
+  //   title: "Domains",
+  //   icon: Globe,
+  //   url: "/domains",
+  //   badge: null,
+  // },
+  // {
+  //   title: "Projects",
+  //   icon: FolderOpen,
+  //   url: "/projects",
+  //   badge: "12",
+  // },
   {
     title: "Tasks",
-    icon: Settings,
-    hasSubmenu: true,
+    icon: CheckSquare,
+    url: "/tasks",
+    badge: "24",
+  },
+
+  // {
+  //   title: "Analytics",
+  //   icon: BarChart3,
+  //   url: "/analytics",
+  //   badge: null,
+  // },
+]
+
+const quickAccessItems = [
+
+  {
+    title: "Overdue",
+    icon: Clock,
+    url: "/tasks?filter=overdue",
+    badge: "2",
+    variant: "destructive" as const,
+  },
+  {
+    title: "Starred",
+    icon: Star,
+    url: "/starred",
+    badge: null,
   },
 ]
 
-const projectItems = [
-  {
-    title: "Design Engineering",
-    icon: Palette,
-    hasAction: true,
-  },
-  {
-    title: "Sales & Marketing",
-    icon: TrendingUp,
-  },
-  {
-    title: "Travel",
-    icon: Plane,
-  },
-  {
-    title: "More",
-    icon: MoreHorizontal,
-  },
-]
-
-const hierarchyData = [
-  {
-    title: "Business Growth",
-    icon: Target,
-    type: "goal",
-    domains: [
-      {
-        title: "Marketing",
-        icon: Megaphone,
-        type: "domain",
-        projects: [
-          {
-            title: "Website Redesign",
-            icon: Monitor,
-            type: "project",
-            tasks: [
-              { title: "Design Homepage", icon: Circle, completed: false },
-              { title: "Implement Auth", icon: CheckCircle, completed: true },
-              { title: "Add Analytics", icon: Circle, completed: false },
-            ],
-          },
-          {
-            title: "SEO Optimization",
-            icon: Globe,
-            type: "project",
-            tasks: [
-              { title: "Keyword Research", icon: CheckCircle, completed: true },
-              { title: "Content Updates", icon: Circle, completed: false },
-            ],
-          },
-        ],
-      },
-      {
-        title: "Sales",
-        icon: ShoppingCart,
-        type: "domain",
-        projects: [
-          {
-            title: "CRM Integration",
-            icon: FileText,
-            type: "project",
-            tasks: [
-              { title: "Setup Database", icon: Circle, completed: false },
-              { title: "Import Contacts", icon: Circle, completed: false },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Product Development",
-    icon: Code,
-    type: "goal",
-    domains: [
-      {
-        title: "Engineering",
-        icon: Code,
-        type: "domain",
-        projects: [
-          {
-            title: "Mobile App",
-            icon: Smartphone,
-            type: "project",
-            tasks: [
-              { title: "Setup React Native", icon: CheckCircle, completed: true },
-              { title: "Build Login Screen", icon: Circle, completed: false },
-              { title: "Add Push Notifications", icon: Circle, completed: false },
-            ],
-          },
-          {
-            title: "Security Audit",
-            icon: Shield,
-            type: "project",
-            tasks: [
-              { title: "Vulnerability Scan", icon: Circle, completed: false },
-              { title: "Update Dependencies", icon: Circle, completed: false },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+const workspaceItems = [
+  // {
+  //   title: "Personal",
+  //   icon: User,
+  //   projects: 8,
+  //   color: "bg-blue-500",
+  // },
+  // {
+  //   title: "Work",
+  //   icon: Building2,
+  //   projects: 12,
+  //   color: "bg-green-500",
+  // },
+  // {
+  //   title: "Side Projects",
+  //   icon: FolderOpen,
+  //   projects: 4,
+  //   color: "bg-purple-500",
+  // },
 ]
 
 export function AppSidebar() {
-   const pathname = usePathname();
-   const isAuthRoute = pathname.startsWith("/authenticate");
-   
-   if (isAuthRoute) {
-       return null; // Don't render sidebar on auth routes
-   }
+  const pathname = usePathname()
+  const router = useRouter()
+  const isAuthRoute = pathname.startsWith("/authenticate")
+
+  if (isAuthRoute) {
+    return null
+  }
+
   return (
-    <Sidebar className="border-r border-sidebar-border">
-      <SidebarHeader className="border-b border-sidebar-border">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-blue-600 text-sidebar-primary-foreground">
-                    <Building2 className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Acme Inc</span>
-                    <span className="truncate text-xs text-sidebar-foreground/70">Enterprise</span>
-                  </div>
-                  <ChevronDown className="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                side="bottom"
-                align="start"
-                sideOffset={4}
-              >
-                <DropdownMenuItem>
-                  <Building2 className="mr-2 size-4" />
-                  <span>Acme Inc</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Building2 className="mr-2 size-4" />
-                  <span>Acme Corp</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+    <Sidebar className="border-r border-sidebar-border bg-sidebar/95 backdrop-blur-sm">
+      <SidebarHeader className="border-b border-sidebar-border/50 p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg">
+              <Building2 className="size-5" />
+            </div>
+            <div>
+              <h2 className="font-bold text-lg text-sidebar-foreground">PPP</h2>
+              <p className="text-xs text-sidebar-foreground/60">Enterprise Plan</p>
+            </div>
+          </div>
+          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-sidebar-accent">
+            <Bell className="size-4" />
+          </Button>
+        </div>
+
+        <Button
+          variant="outline"
+          className="w-full justify-start text-sidebar-foreground/60 border-sidebar-border/50 hover:bg-sidebar-accent/50 bg-transparent"
+          onClick={() => {
+            /* TODO: Implement search */
+          }}
+        >
+          <Search className="size-4 mr-2" />
+          Search...
+          <kbd className="ml-auto text-xs bg-sidebar-accent/50 px-1.5 py-0.5 rounded">⌘K</kbd>
+        </Button>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="px-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {platformItems.map((item) => (
+              {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  {item.isCollapsible ? (
-                    <Collapsible defaultOpen className="group/collapsible">
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton tooltip={item.title}>
-                          <item.icon className="size-4" />
-                          <span>{item.title}</span>
-                          <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          {item.items?.map((subItem) => (
-                            <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton asChild>
-                                <a href="#">
-                                  <subItem.icon className="size-4" />
-                                  <span>{subItem.title}</span>
-                                </a>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  ) : (
-                    <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={item.title}
+                    isActive={pathname === item.url}
+                    className="h-10 hover:bg-sidebar-accent/50 data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground font-medium"
+                  >
+                    <a href={item.url} className="flex items-center gap-3">
                       <item.icon className="size-4" />
                       <span>{item.title}</span>
-                      {item.hasSubmenu && <ChevronRight className="ml-auto size-4" />}
-                    </SidebarMenuButton>
-                  )}
+                      {item.badge && (
+                        <Badge variant="secondary" className="ml-auto text-xs h-5 px-1.5">
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </a>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -275,158 +202,144 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Goals & Projects</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sidebar-foreground/70 font-semibold">Quick Access</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {hierarchyData.map((goal) => (
-                <SidebarMenuItem key={goal.title}>
-                  <Collapsible className="group/goal">
+              {quickAccessItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title} className="h-9 hover:bg-sidebar-accent/50">
+                    <a href={item.url} className="flex items-center gap-3">
+                      <item.icon className="size-4" />
+                      <span className="text-sm">{item.title}</span>
+                      {item.badge && (
+                        <Badge variant={item.variant || "secondary"} className="ml-auto text-xs h-5 px-1.5">
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          {/* <div className="flex items-center justify-between px-2 mb-2">
+            <SidebarGroupLabel className="text-sidebar-foreground/70 font-semibold">Workspaces</SidebarGroupLabel>
+            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-sidebar-accent">
+              <Plus className="size-3" />
+            </Button>
+          </div> */}
+          {/* <SidebarGroupContent>
+            <SidebarMenu>
+              {workspaceItems.map((workspace) => (
+                <SidebarMenuItem key={workspace.title}>
+                  <Collapsible className="group/workspace">
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton tooltip={goal.title} className="font-medium">
-                        <goal.icon className="size-4" />
-                        <span>{goal.title}</span>
-                        <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/goal:rotate-90" />
+                      <SidebarMenuButton className="h-9 hover:bg-sidebar-accent/50 group-data-[state=open]/workspace:bg-sidebar-accent/30">
+                        <div className={`size-4 rounded-md ${workspace.color}`} />
+                        <span className="text-sm font-medium">{workspace.title}</span>
+                        <div className="ml-auto flex items-center gap-2">
+                          <span className="text-xs text-sidebar-foreground/50">{workspace.projects}</span>
+                          <ChevronRight className="size-3 transition-transform duration-200 group-data-[state=open]/workspace:rotate-90" />
+                        </div>
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {goal.domains.map((domain) => (
-                          <SidebarMenuSubItem key={domain.title}>
-                            <Collapsible className="group/domain">
-                              <CollapsibleTrigger asChild>
-                                <SidebarMenuSubButton className="font-medium">
-                                  <domain.icon className="size-4" />
-                                  <span>{domain.title}</span>
-                                  <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/domain:rotate-90" />
-                                </SidebarMenuSubButton>
-                              </CollapsibleTrigger>
-                              <CollapsibleContent>
-                                <SidebarMenuSub className="ml-4">
-                                  {domain.projects.map((project) => (
-                                    <SidebarMenuSubItem key={project.title}>
-                                      <Collapsible className="group/project">
-                                        <CollapsibleTrigger asChild>
-                                          <SidebarMenuSubButton>
-                                            <project.icon className="size-4" />
-                                            <span>{project.title}</span>
-                                            <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/project:rotate-90" />
-                                          </SidebarMenuSubButton>
-                                        </CollapsibleTrigger>
-                                        <CollapsibleContent>
-                                          <SidebarMenuSub className="ml-4">
-                                            {project.tasks.map((task) => (
-                                              <SidebarMenuSubItem key={task.title}>
-                                                <SidebarMenuSubButton className="text-sm">
-                                                  <task.icon
-                                                    className={`size-4 ${task.completed ? "text-green-500" : "text-muted-foreground"}`}
-                                                  />
-                                                  <span
-                                                    className={
-                                                      task.completed ? "line-through text-muted-foreground" : ""
-                                                    }
-                                                  >
-                                                    {task.title}
-                                                  </span>
-                                                </SidebarMenuSubButton>
-                                              </SidebarMenuSubItem>
-                                            ))}
-                                          </SidebarMenuSub>
-                                        </CollapsibleContent>
-                                      </Collapsible>
-                                    </SidebarMenuSubItem>
-                                  ))}
-                                </SidebarMenuSub>
-                              </CollapsibleContent>
-                            </Collapsible>
-                          </SidebarMenuSubItem>
-                        ))}
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild className="text-sm">
+                            <a href={`/projects?workspace=${workspace.title.toLowerCase()}`}>
+                              <FolderOpen className="size-3" />
+                              <span>All Projects</span>
+                            </a>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild className="text-sm">
+                            <a href={`/projects?workspace=${workspace.title.toLowerCase()}&status=active`}>
+                              <CheckSquare className="size-3" />
+                              <span>Active Projects</span>
+                            </a>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild className="text-sm">
+                            <a href={`/projects?workspace=${workspace.title.toLowerCase()}&status=archived`}>
+                              <Archive className="size-3" />
+                              <span>Archived</span>
+                            </a>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   </Collapsible>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Projects</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {projectItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton tooltip={item.title}>
-                    <item.icon className="size-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                  {item.hasAction && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <SidebarMenuAction showOnHover>
-                          <MoreHorizontal className="size-4" />
-                          <span className="sr-only">More</span>
-                        </SidebarMenuAction>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-48 rounded-lg" side="bottom" align="end">
-                        <DropdownMenuItem>
-                          <span>Edit Project</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <span>View Details</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <span>Archive</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
+          </SidebarGroupContent> */}
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border">
+      <SidebarFooter className="border-t border-sidebar-border/50 p-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-sidebar-accent/50 h-12"
                 >
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src="/diverse-user-avatars.png" alt="shadcn" />
-                    <AvatarFallback className="rounded-lg">SC</AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">shadcn</span>
-                    <span className="truncate text-xs text-sidebar-foreground/70">m@example.com</span>
+                  <div className="relative">
+                    <Avatar className="h-8 w-8 rounded-lg border-2 border-sidebar-border">
+                      <AvatarImage src="/diverse-user-avatars.png" alt="User" />
+                      <AvatarFallback className="rounded-lg bg-primary text-primary-foreground font-semibold">
+                        JD
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-green-500 border-2 border-sidebar" />
                   </div>
-                  <ChevronUp className="ml-auto size-4" />
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold text-sidebar-foreground">John Doe</span>
+                    <span className="truncate text-xs text-sidebar-foreground/60">john@company.com</span>
+                  </div>
+                  <ChevronUp className="ml-auto size-4 text-sidebar-foreground/60" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                className="w-56 rounded-lg shadow-lg border-sidebar-border"
                 side="top"
                 align="start"
-                sideOffset={4}
+                sideOffset={8}
               >
-                <DropdownMenuItem className="text-red-500 hover:text-red-500" onClick={async () => {
-						await logout();
-						router.push("/authenticate");
-					}}>
-                  <User className="mr-2 size-4" />
-                  <span>Logout</span>
+                <div className="px-2 py-1.5">
+                  <p className="text-sm font-medium">John Doe</p>
+                  <p className="text-xs text-muted-foreground">john@company.com</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2 cursor-pointer">
+                  <User className="size-4" />
+                  <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <User className="mr-2 size-4" />
-                  <span>Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 size-4" />
+                <DropdownMenuItem className="gap-2 cursor-pointer">
+                  <Settings className="size-4" />
                   <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2 cursor-pointer">
+                  <Bell className="size-4" />
+                  <span>Notifications</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="gap-2 text-red-600 focus:text-red-600 cursor-pointer"
+                  onClick={async () => {
+                    await logout()
+                    router.push("/authenticate")
+                  }}
+                >
+                  <LogOut className="size-4" />
+                  <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
