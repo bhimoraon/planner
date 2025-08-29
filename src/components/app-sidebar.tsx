@@ -104,12 +104,12 @@ const quickAccessItems = [
     badge: "2",
     variant: "destructive" as const,
   },
-  {
-    title: "Starred",
-    icon: Star,
-    url: "/starred",
-    badge: null,
-  },
+  // {
+  //   title: "Starred",
+  //   icon: Star,
+  //   url: "/starred",
+  //   badge: null,
+  // },
 ]
 
 const workspaceItems = [

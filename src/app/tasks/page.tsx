@@ -68,10 +68,12 @@ async function getData() {
 export default async function TasksPage({
   searchParams,
 }: {
-  searchParams?: { filter?: string }
+  searchParams: Promise<{ filter?: string }>
 }) {
   const { today, tomorrow, yesterday, overdue } = await getData()
-  const filtered = (searchParams?.filter || "").toLowerCase()
+
+  const params = await searchParams
+  const filtered = (params?.filter || "").toLowerCase()
 
   const showOnlyOverdue = filtered === "overdue"
 

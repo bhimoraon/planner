@@ -2,11 +2,14 @@
 
 import { prisma } from "./prisma"
 import { revalidatePath } from "next/cache"
+import { getUser } from "./lucia"
 
 export async function getGoals() {
   try {
+    const user = await getUser();
+
     const goals = await prisma.goal.findMany({
-      where: { userId: "68a8c4c77a9438a9701ceffa" },
+      where: { userId: user?.id },
       orderBy: { createdAt: "desc" },
     })
 
@@ -30,6 +33,7 @@ export async function getGoals() {
 
 export async function getOneGoal(goalId: string) {
   try {
+
     const goal = await prisma.goal.findUnique({
       where: { id: goalId },
     })
@@ -45,13 +49,15 @@ export async function createGoal(formData: FormData) {
     const title = formData.get("title") as string
     const description = formData.get("description") as string
     const deadline = formData.get("deadline") as string
+    const user = await getUser();
 
+    if (!user) throw new Error("No user")
     const goal = await prisma.goal.create({
       data: {
         title,
         description,
         deadline: deadline ? new Date(deadline) : null,
-        userId: "68a8c4c77a9438a9701ceffa",
+        userId: user?.id,
         status: "IN_PROGRESS",
         progress: 0,
       },
@@ -146,13 +152,15 @@ export async function createDomain(formData: FormData) {
     const title = formData.get("title") as string
     const description = formData.get("description") as string
     const goalId = formData.get("goalId") as string
+    const user = await getUser();
 
+    if (!user) throw new Error("No user")
     const domain = await prisma.domain.create({
       data: {
         title,
         description,
         goalId,
-        userId: "68a8c4c77a9438a9701ceffa",
+        userId: user?.id,
         status: "IN_PROGRESS",
         progress: 0,
       },
@@ -258,14 +266,16 @@ export async function createProject(formData: FormData) {
     const description = formData.get("description") as string
     const domainId = formData.get("domainId") as string
     const goalId = formData.get("goalId") as string
+    const user = await getUser();
 
+    if (!user) throw new Error("No user")
     const project = await prisma.project.create({
       data: {
         title,
         description,
         domainId,
         goalId,
-        userId: "68a8c4c77a9438a9701ceffa",
+        userId: user?.id,
         progress: 0,
       },
     })
@@ -350,7 +360,9 @@ export async function createTask(formData: FormData) {
     const projectId = formData.get("projectId") as string
     const domainId = formData.get("domainId") as string
     const goalId = formData.get("goalId") as string
+    const user = await getUser();
 
+    if (!user) throw new Error("No user")
     const task = await prisma.task.create({
       data: {
         title,
@@ -361,7 +373,7 @@ export async function createTask(formData: FormData) {
         projectId,
         domainId,
         goalId,
-        userId: "68a8c4c77a9438a9701ceffa",
+        userId: user?.id,
         completed: false,
       },
     })
@@ -544,7 +556,9 @@ export async function getProjectProgress(projectId: string) {
 
 export async function getDashboardStats() {
   try {
-    const userId = "68a8c4c77a9438a9701ceffa"
+
+    const user = await getUser();
+    const userId = user?.id
 
     const [goals, domains, projects, tasks] = await Promise.all([
       prisma.goal.findMany({
@@ -594,7 +608,9 @@ export async function getDashboardStats() {
 
 export async function getTodaysTasks() {
   try {
-    const userId = "68a8c4c77a9438a9701ceffa"
+
+    const user = await getUser();
+    const userId = user?.id
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const tomorrow = new Date(today)
@@ -625,7 +641,9 @@ export async function getTodaysTasks() {
 
 export async function getRecentProjects() {
   try {
-    const userId = "68a8c4c77a9438a9701ceffa"
+
+    const user = await getUser();
+    const userId = user?.id
 
     const projects = await prisma.project.findMany({
       where: { userId },
@@ -663,7 +681,9 @@ export async function getRecentProjects() {
 
 export async function getUpcomingTasks() {
   try {
-    const userId = "68a8c4c77a9438a9701ceffa"
+
+    const user = await getUser();
+    const userId = user?.id
     const today = new Date()
     const nextWeek = new Date(today)
     nextWeek.setDate(nextWeek.getDate() + 7)
@@ -695,7 +715,9 @@ export async function getUpcomingTasks() {
 
 export async function getOverdueTasks() {
   try {
-    const userId = "68a8c4c77a9438a9701ceffa"
+
+    const user = await getUser();
+    const userId = user?.id
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
@@ -722,7 +744,9 @@ export async function getOverdueTasks() {
 
 export async function getYesterdaysTasks() {
   try {
-    const userId = "68a8c4c77a9438a9701ceffa"
+
+    const user = await getUser();
+    const userId = user?.id
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const yesterday = new Date(today)
@@ -752,7 +776,8 @@ export async function getYesterdaysTasks() {
 
 export async function getTomorrowsTasks() {
   try {
-    const userId = "68a8c4c77a9438a9701ceffa"
+    const user = await getUser();
+    const userId = user?.id
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const tomorrow = new Date(today)
