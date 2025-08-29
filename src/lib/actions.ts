@@ -692,3 +692,92 @@ export async function getUpcomingTasks() {
     return { success: false, error: "Failed to fetch upcoming tasks" }
   }
 }
+
+export async function getOverdueTasks() {
+  try {
+    const userId = "68a8c4c77a9438a9701ceffa"
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        userId,
+        completed: false,
+        deadline: {
+          lt: today,
+        },
+      },
+      include: {
+        project: { select: { title: true } },
+      },
+      orderBy: [{ deadline: "asc" }, { priority: "desc" }],
+    })
+
+    return { success: true, data: tasks }
+  } catch (error) {
+    console.error("Server Action: Error fetching overdue tasks:", error)
+    return { success: false, error: "Failed to fetch overdue tasks" }
+  }
+}
+
+export async function getYesterdaysTasks() {
+  try {
+    const userId = "68a8c4c77a9438a9701ceffa"
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        userId,
+        completed: false,
+        deadline: {
+          gte: yesterday,
+          lt: today,
+        },
+      },
+      include: {
+        project: { select: { title: true } },
+      },
+      orderBy: [{ priority: "desc" }, { deadline: "asc" }],
+    })
+
+    return { success: true, data: tasks }
+  } catch (error) {
+    console.error("Server Action: Error fetching yesterday's tasks:", error)
+    return { success: false, error: "Failed to fetch yesterday's tasks" }
+  }
+}
+
+export async function getTomorrowsTasks() {
+  try {
+    const userId = "68a8c4c77a9438a9701ceffa"
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const dayAfterTomorrow = new Date(tomorrow)
+    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1)
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        userId,
+        completed: false,
+        deadline: {
+          gte: tomorrow,
+          lt: dayAfterTomorrow,
+        },
+      },
+      include: {
+        project: { select: { title: true } },
+      },
+      orderBy: [{ priority: "desc" }, { deadline: "asc" }],
+    })
+
+    return { success: true, data: tasks }
+  } catch (error) {
+    console.error("Server Action: Error fetching tomorrow's tasks:", error)
+    return { success: false, error: "Failed to fetch tomorrow's tasks" }
+  }
+}

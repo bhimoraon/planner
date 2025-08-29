@@ -9,7 +9,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 })
 
-
 import "./globals.css"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
