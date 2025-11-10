@@ -1,15 +1,15 @@
 import TabSwitcher from "../../components/tab-switcher";
 import SignUpForm from "./SignUpForm";
 import SignInForm from "./SignInForm";
-import { getUser } from "@/lib/lucia";
-import { redirect } from "next/navigation";
+// import { getUser } from "@/lib/lucia";
+// import { redirect } from "next/navigation";
 
 
 async function page() {
-	const user = await getUser();
-	if (user) {
-		return redirect("/");
-	}
+	// const user = await getUser();
+	// if (user) {
+	// 	return redirect("/");
+	// }
 
 	return (
 		<div className=" h-screen w-full flex  relative  ">

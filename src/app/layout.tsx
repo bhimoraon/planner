@@ -45,7 +45,7 @@ export default function RootLayout({
                 <div className="flex items-center gap-2">
                   <Link
                     href="/dashboard"
-                    className="text-lg font-semibold text-foreground hover:text-accent transition-colors duration-200 focus-enhanced rounded-sm px-1"
+                    className="text-lg font-semibold text-foreground  transition-colors duration-200 focus-enhanced rounded-sm px-1"
                   >
                     Personal Productivity Planner
                   </Link>

@@ -41,7 +41,8 @@ function SignUpForm() {
     if (res.success) {
       // sonner is already installed when we installed shadcn
       toast.success(res.message)
-      router.push("/")
+      
+      router.push("/dashboard")
     } else {
       toast.error(res.message)
     }

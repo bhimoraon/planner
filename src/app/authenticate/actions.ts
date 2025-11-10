@@ -12,7 +12,26 @@ import type { signInSchema } from "./SignInForm"
 export async function createSession(userId: string) {
   const cookieStore = await cookies()
   const session = await lucia.createSession(userId, {})
+  // console.log("Session created:", session) // Debug log
+  //   Session created: {
+  //   id: 'ipppfadad7oprhzeu4ybjcqn263zdeswzfxu4jcg',
+  //   userId: '68d8fefb7959ce53b8c1c3a8',
+  //   fresh: true,
+  //   expiresAt: 2025-10-28T14:18:57.963Z
+  // }
   const sessionCookie = await lucia.createSessionCookie(session.id)
+  // console.log("Session cookie created:", sessionCookie) // Debug log
+  //   Session cookie created: Cookie {
+  //   name: 'session',
+  //   value: 'ipppfadad7oprhzeu4ybjcqn263zdeswzfxu4jcg',
+  //   attributes: {
+  //     httpOnly: true,
+  //     secure: false,
+  //     sameSite: 'lax',
+  //     path: '/',
+  //     maxAge: 34560000
+  //   }
+  // }
   cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
   return { message: "Login successful", success: true }
 }
@@ -26,7 +45,7 @@ export async function signUp(values: z.infer<typeof signUpSchema>) {
     if (existingUser) {
       return { message: "User already exists", success: false }
     }
-
+  
     const hashedPassword = await bcrypt.hash(values.password, 10)
 
     const user = await prisma.user.create({
@@ -52,7 +71,9 @@ export async function signIn(values: z.infer<typeof signInSchema>) {
       return { message: "Invalid credentials", success: false }
     }
 
+
     const passwordMatch = await bcrypt.compare(values.password, user.hashedPassword)
+
     if (!passwordMatch) {
       return { message: "Invalid credentials", success: false }
     }

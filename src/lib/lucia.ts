@@ -17,12 +17,13 @@ export const lucia = new Lucia(adapter, {
 
 export const getUser = async () => {
     const cookieStore = await cookies() // ✅ await now
+
     const sessionId = cookieStore.get(lucia.sessionCookieName)?.value || null
 
     if (!sessionId) return null
 
     try {
-        const { session, user } = await lucia.validateSession(sessionId)
+        const {session, user} = await lucia.validateSession(sessionId)
     
         if (session && session.fresh) {
             const sessionCookie = await lucia.createSessionCookie(session.id)

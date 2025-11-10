@@ -56,12 +56,12 @@ const mainNavItems = [
     url: "/dashboard",
     badge: null,
   },
-  {
-    title: "Workspace",
-    icon: Calendar,
-    url: "/workspace",
-    badge: "5",
-  },
+  // {
+  //   title: "Workspace",
+  //   icon: Calendar,
+  //   url: "/workspace",
+  //   badge: "5",
+  // },
   {
     title: "Goals",
     icon: Target,
@@ -84,7 +84,7 @@ const mainNavItems = [
     title: "Tasks",
     icon: CheckSquare,
     url: "/tasks",
-    badge: "24",
+    badge: "9",
   },
 
   // {
@@ -101,7 +101,7 @@ const quickAccessItems = [
     title: "Overdue",
     icon: Clock,
     url: "/tasks?filter=overdue",
-    badge: "2",
+    badge: "0",
     variant: "destructive" as const,
   },
   // {
@@ -112,26 +112,26 @@ const quickAccessItems = [
   // },
 ]
 
-const workspaceItems = [
-  // {
-  //   title: "Personal",
-  //   icon: User,
-  //   projects: 8,
-  //   color: "bg-blue-500",
-  // },
-  // {
-  //   title: "Work",
-  //   icon: Building2,
-  //   projects: 12,
-  //   color: "bg-green-500",
-  // },
-  // {
-  //   title: "Side Projects",
-  //   icon: FolderOpen,
-  //   projects: 4,
-  //   color: "bg-purple-500",
-  // },
-]
+// const workspaceItems = [
+// {
+//   title: "Personal",
+//   icon: User,
+//   projects: 8,
+//   color: "bg-blue-500",
+// },
+// {
+//   title: "Work",
+//   icon: Building2,
+//   projects: 12,
+//   color: "bg-green-500",
+// },
+// {
+//   title: "Side Projects",
+//   icon: FolderOpen,
+//   projects: 4,
+//   color: "bg-purple-500",
+// },
+// ]
 
 export function AppSidebar() {
   const pathname = usePathname()

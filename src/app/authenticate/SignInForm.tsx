@@ -37,7 +37,7 @@ function SignInForm() {
 
     if (res.success) {
       toast.success(res.message)
-      router.push("/")
+      router.push("/dashboard")
     } else toast.error(res.message)
   }
   return (
