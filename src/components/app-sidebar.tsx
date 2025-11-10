@@ -138,7 +138,8 @@ export function AppSidebar() {
   const router = useRouter()
   const isAuthRoute = pathname.startsWith("/authenticate")
 
-  if (isAuthRoute) {
+  
+  if (isAuthRoute || pathname == '/') {
     return null
   }
 

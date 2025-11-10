@@ -15,6 +15,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { Toaster } from "sonner"
 import Link from "next/link"
 
+
 const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
@@ -43,12 +44,11 @@ export default function RootLayout({
               <div className="flex items-center gap-4">
                 <SidebarTrigger className="focus-enhanced" />
                 <div className="flex items-center gap-2">
-                  <Link
-                    href="/dashboard"
-                    className="text-lg font-semibold text-foreground  transition-colors duration-200 focus-enhanced rounded-sm px-1"
+                  <div
+                    className="text-lg font-semibold text-foreground select-none transition-colors duration-200 focus-enhanced rounded-sm px-1"
                   >
                     Personal Productivity Planner
-                  </Link>
+                  </div>
                 </div>
               </div>
             </header>

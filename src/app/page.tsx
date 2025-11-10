@@ -1,9 +1,13 @@
-import React from 'react'
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
+export default function Page() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/dashboard'); // `replace` avoids adding a new entry to browser history
+  }, [router]);
+
+  return null;
 }
-
-export default page
